@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find It — Lost & Found</title>
+<meta name="description" content="A centralized lost and found board for campus. Report, search, and reconnect items with their owners.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#board">Skip to the board</a>
+
+<header>
+  <div class="nav">
+    <div class="logo"><span class="pin">📍</span> Find It</div>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#board">Browse Board</a>
+      <a href="#how">How it works</a>
+      <a href="#" id="navMyItems" hidden>My Items</a>
+      <a href="#" id="navAdmin" hidden>Admin</a>
+    </nav>
+    <div class="nav-right">
+      <span class="account-slot" id="accountSlot">
+        <button class="btn btn-outline btn-sm" id="navSignIn" type="button">Sign In</button>
+      </span>
+      <button class="btn btn-primary" id="navReport" type="button">+ Report Item</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">🎓 For students on campus</div>
+    <h1 class="display">Lost Something?<br>Let's Find It.</h1>
+    <p class="sub">One simple board for everything lost and found on campus. Post it, search it, connect, and get it back.</p>
+
+    <div class="action-cards">
+      <button class="action-card search" id="cardSearch" type="button">
+        <span class="pin-dot" aria-hidden="true"></span>
+        <div class="action-icon" aria-hidden="true">🔍</div>
+        <h3>Search</h3>
+        <p>Look through everything reported lost or found right now.</p>
+        <span class="btn btn-outline btn-sm btn-block">Search the board</span>
+      </button>
+      <button class="action-card lost" id="cardLost" type="button">
+        <span class="pin-dot" aria-hidden="true"></span>
+        <div class="action-icon" aria-hidden="true">📢</div>
+        <h3>I Lost Something</h3>
+        <p>Post what you lost so people who find it know where to reach you.</p>
+        <span class="btn btn-lost btn-sm btn-block">Report as lost</span>
+      </button>
+      <button class="action-card found" id="cardFound" type="button">
+        <span class="pin-dot" aria-hidden="true"></span>
+        <div class="action-icon" aria-hidden="true">📥</div>
+        <h3>I Found Something</h3>
+        <p>Found an item on campus? Post it so the owner can find you.</p>
+        <span class="btn btn-found btn-sm btn-block">Report as found</span>
+      </button>
+    </div>
+
+    <div class="flow" id="how" aria-label="How Find It works">
+      <div class="flow-step"><div class="circ" aria-hidden="true">📢</div><span>Lost</span></div>
+      <div class="flow-line" aria-hidden="true"></div>
+      <div class="flow-step"><div class="circ" aria-hidden="true">🔍</div><span>Search</span></div>
+      <div class="flow-line" aria-hidden="true"></div>
+      <div class="flow-step"><div class="circ" aria-hidden="true">📥</div><span>Found</span></div>
+      <div class="flow-line" aria-hidden="true"></div>
+      <div class="flow-step"><div class="circ" aria-hidden="true">🤝</div><span>Connect</span></div>
+      <div class="flow-line" aria-hidden="true"></div>
+      <div class="flow-step"><div class="circ" aria-hidden="true">✅</div><span>Return</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="board" id="board">
+  <div class="container">
+    <div class="board-head">
+      <div>
+        <h2 class="display">The Board</h2>
+        <p>Everything reported lost or found on campus, most recent first.</p>
+      </div>
+    </div>
+
+    <div class="board-controls">
+      <div class="search-box">
+        <span class="icon" aria-hidden="true">🔍</span>
+        <label for="searchInput" class="visually-hidden">Search by item name or location</label>
+        <input type="text" id="searchInput" placeholder="Search by item name or location, e.g. AirPods, Room 204...">
+      </div>
+      <label for="categoryFilter" class="visually-hidden">Filter by category</label>
+      <select id="categoryFilter" class="category-select">
+        <option value="all">All categories</option>
+        <option value="electronics">Electronics</option>
+        <option value="bags">Bags & Backpacks</option>
+        <option value="documents">Documents & Cards</option>
+        <option value="accessories">Accessories</option>
+        <option value="other">Other</option>
+      </select>
+      <div class="tabs" id="tabs" role="tablist" aria-label="Filter items by status">
+        <button class="tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+        <button class="tab" data-filter="lost" role="tab" aria-selected="false">Lost</button>
+        <button class="tab" data-filter="found" role="tab" aria-selected="false">Found</button>
+        <button class="tab" data-filter="returned" role="tab" aria-selected="false">Returned</button>
+      </div>
+    </div>
+
+    <div class="grid" id="grid" aria-live="polite" aria-busy="false"></div>
+  </div>
+</section>
+
+<footer>
+  Find It — a simple Lost & Found board for campus. Be honest, be kind, get things back to their owners.
+</footer>
+
+<!-- Lost / Found form modal -->
+<div class="overlay" id="formOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+    <div class="modal-head">
+      <h3 id="formTitle">📢 I Lost Something</h3>
+      <button class="modal-close" id="formClose" type="button" aria-label="Close form">✕</button>
+    </div>
+    <form id="itemForm" novalidate>
+      <div class="field">
+        <label for="fName">What's the item?</label>
+        <input type="text" id="fName" placeholder="e.g. AirPods, blue backpack, student ID..." required>
+        <p class="field-error" id="fNameError" role="alert"></p>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="fCategory">Category</label>
+          <select id="fCategory" required>
+            <option value="" disabled selected>Choose one</option>
+            <option value="electronics">Electronics</option>
+            <option value="bags">Bags & Backpacks</option>
+            <option value="documents">Documents & Cards</option>
+            <option value="accessories">Accessories</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fDate" id="dateLabel">Date lost</label>
+          <input type="date" id="fDate" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="fLocation" id="locLabel">Where did you lose it?</label>
+        <input type="text" id="fLocation" placeholder="e.g. Room 204, Library 2nd floor..." required>
+        <p class="field-error" id="fLocationError" role="alert"></p>
+      </div>
+      <div class="field">
+        <label for="fDesc">Details <span class="optional">(optional)</span></label>
+        <textarea id="fDesc" placeholder="Color, brand, any identifying details..."></textarea>
+      </div>
+      <div class="field">
+        <label for="fImage">Photo <span class="optional">(optional)</span></label>
+        <input type="file" id="fImage" accept="image/png, image/jpeg, image/webp">
+        <p class="hint">JPG, PNG, or WebP. Max 5MB.</p>
+        <p class="field-error" id="fImageError" role="alert"></p>
+        <div class="image-preview" id="imagePreview" hidden>
+          <img id="imagePreviewImg" alt="Preview of the uploaded photo">
+          <button type="button" class="image-remove" id="imageRemove" aria-label="Remove photo">✕</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="fContact" id="contactLabel">Your contact info</label>
+        <input type="text" id="fContact" placeholder="Phone, email, or Instagram" required>
+        <p class="hint">Only shown to someone who opens this specific post — not listed publicly on the board.</p>
+        <p class="field-error" id="fContactError" role="alert"></p>
+      </div>
+      <button type="submit" class="btn btn-block" id="formSubmit">
+        <span id="formSubmitLabel">Post to the board</span>
+        <span class="spinner" id="formSpinner" hidden aria-hidden="true"></span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Item detail / connect modal -->
+<div class="overlay" id="detailOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <div class="modal-head">
+      <h3 id="detailTitle">Item</h3>
+      <button class="modal-close" id="detailClose" type="button" aria-label="Close details">✕</button>
+    </div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- Auth modal -->
+<div class="overlay" id="authOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="modal-head">
+      <h3 id="authTitle">Sign In</h3>
+      <button class="modal-close" id="authClose" type="button" aria-label="Close sign in">✕</button>
+    </div>
+    <form id="authForm" novalidate>
+      <p class="hint" id="authHint">Sign in to post items and connect with owners/finders.</p>
+      <div class="field" id="authNameField" hidden>
+        <label for="authName">Full name</label>
+        <input type="text" id="authName" placeholder="e.g. Nour Mostafa">
+      </div>
+      <div class="field">
+        <label for="authEmail">Email</label>
+        <input type="email" id="authEmail" placeholder="you@university.edu" required>
+      </div>
+      <div class="field" id="authStudentField" hidden>
+        <label for="authStudentId">Student ID <span class="optional">(optional)</span></label>
+        <input type="text" id="authStudentId" placeholder="e.g. 20211234">
+      </div>
+      <div class="field">
+        <label for="authPassword">Password</label>
+        <input type="password" id="authPassword" placeholder="At least 8 characters" required>
+      </div>
+      <p class="field-error" id="authError" role="alert" style="display:block;"></p>
+      <button type="submit" class="btn btn-primary btn-block" id="authSubmit">
+        <span id="authSubmitLabel">Sign In</span>
+        <span class="spinner" id="authSpinner" hidden aria-hidden="true"></span>
+      </button>
+      <p class="hint" style="text-align:center; margin-top:12px;">
+        <span id="authToggleText">New here?</span>
+        <a href="#" id="authToggle">Create an account</a>
+      </p>
+    </form>
+  </div>
+</div>
+
+<!-- My Items & Claims modal -->
+<div class="overlay" id="myOverlay">
+  <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="myTitle">
+    <div class="modal-head">
+      <h3 id="myTitle">My Items & Claims</h3>
+      <button class="modal-close" id="myClose" type="button" aria-label="Close">✕</button>
+    </div>
+    <div class="panel-tabs">
+      <button class="panel-tab active" data-panel="myItems" type="button">My Items</button>
+      <button class="panel-tab" data-panel="myClaims" type="button">My Claims</button>
+    </div>
+    <div id="myBody"></div>
+  </div>
+</div>
+
+<!-- Admin modal -->
+<div class="overlay" id="adminOverlay">
+  <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+    <div class="modal-head">
+      <h3 id="adminTitle">🛠️ Admin</h3>
+      <button class="modal-close" id="adminClose" type="button" aria-label="Close">✕</button>
+    </div>
+    <div class="panel-tabs">
+      <button class="panel-tab active" data-panel="adminStats" type="button">Overview</button>
+      <button class="panel-tab" data-panel="adminReports" type="button">Reports</button>
+      <button class="panel-tab" data-panel="adminUsers" type="button">Users</button>
+    </div>
+    <div id="adminBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
