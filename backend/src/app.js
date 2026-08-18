@@ -14,7 +14,7 @@ const { notFoundHandler, errorHandler } = require('./middleware/errorHandler');
 const { UPLOAD_DIR } = require('./middleware/upload');
 
 const app = express();
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || '*' }));
@@ -46,4 +46,5 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 module.exports = app;
+
 
