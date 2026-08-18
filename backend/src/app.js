@@ -33,7 +33,7 @@ app.use(rateLimit({
 app.use('/uploads', express.static(UPLOAD_DIR));
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
-
+app.get('/', (req, res) => res.json({ status: 'ok', message: 'Find It API is running 🚀' }));
 app.use('/auth', authRoutes);
 app.use('/items', itemsRoutes);
 app.use('/reports', reportsRoutes);
